@@ -1,0 +1,15 @@
+{
+  // Visit https://aka.ms/tsconfig to read more about this file
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler", // Change from NodeNext to Bundler
+    "jsx": "react-jsx",
+    "allowImportingTsExtensions": true, // Optional: if you want to import .ts directly
+    "noEmit": true, // Usually true when using a bundler like Vite
+    "strict": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true
+  }
+}
