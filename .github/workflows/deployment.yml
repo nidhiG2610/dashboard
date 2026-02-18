@@ -32,7 +32,8 @@ jobs:
             git clone https://${{ secrets.GH_PAT }}@github.com/nidhiG2610/dashboard.git .
 
             # Fix permissions so EC2 user can write files
-            sudo chown -R $USER:$USER ~/dashboard
+            # Fix permissions to avoid npm EACCES errors
+            sudo chown -R $USER:$USER .
 
             # -----------------------------
             # Backend (Laravel)
@@ -41,11 +42,10 @@ jobs:
             cd ~/dashboard/backend
 
             # Install Composer if missing
-            if ! command -v composer &> /dev/null
-            then
-              echo "Installing Composer..."
-              curl -sS https://getcomposer.org/installer | php
-              sudo mv composer.phar /usr/local/bin/composer
+            if ! command -v composer &> /dev/null; then
+                echo "Installing Composer..."
+                curl -sS https://getcomposer.org/installer | php
+                sudo mv composer.phar /usr/local/bin/composer
             fi
 
             composer install --no-dev --optimize-autoloader
@@ -65,8 +65,7 @@ jobs:
               sudo apt install -y nodejs
             fi
 
-            # Fix permissions to avoid npm EACCES errors
-            sudo chown -R $USER:$USER .
+            
 
             npm install
             npm run build
