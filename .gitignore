@@ -24,3 +24,4 @@ dist-ssr
 *.sw?
 claude-migration-plan
 CLAUDE.md
+/.ssh
