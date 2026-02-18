@@ -79,6 +79,16 @@ jobs:
             echo "Frontend build copied to Laravel public/build"
 
             # -----------------------------
+            # Fix permissions
+            # -----------------------------
+            echo "=== Step 6: Fix permissions ==="
+            sudo chown -R www-data:www-data ~/dashboard/backend
+            sudo find ~/dashboard/backend -type d -exec chmod 755 {} \;
+            sudo find ~/dashboard/backend -type f -exec chmod 644 {} \;
+            sudo chmod -R 775 ~/dashboard/backend/storage ~/dashboard/backend/bootstrap/cache
+
+
+            # -----------------------------
             # Step 7: Nginx setup
             # -----------------------------
             echo "=== Nginx deployment ==="
