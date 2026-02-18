@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout repo for any local files needed
+      # Step 1: Checkout repo (needed only if you use local files)
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -24,12 +24,15 @@ jobs:
           port: 22
           script: |
             echo "=== Step 1: Remove old dashboard folder ==="
-            rm -rf ~/dashboard
+            sudo rm -rf ~/dashboard
             mkdir -p ~/dashboard
 
             echo "=== Step 2: Clone repository fresh ==="
             cd ~/dashboard
             git clone git@github.com:nidhiG2610/dashboard.git .
+
+            # Fix permissions so EC2 user can write files
+            sudo chown -R $USER:$USER ~/dashboard
 
             # -----------------------------
             # Backend (Laravel)
@@ -61,6 +64,9 @@ jobs:
               curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
               sudo apt install -y nodejs
             fi
+
+            # Fix permissions to avoid npm EACCES errors
+            sudo chown -R $USER:$USER .
 
             npm install
             npm run build
