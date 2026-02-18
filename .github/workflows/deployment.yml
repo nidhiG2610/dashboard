@@ -73,7 +73,7 @@ jobs:
             echo "Frontend build complete (Vite outDir = backend/public/build)"
 
             # -----------------------------
-            # NGINX deployment
+            # NGINX deployment.
             # -----------------------------
             echo "=== Step 5: NGINX setup ==="
             cd ~/dashboard/nginx
