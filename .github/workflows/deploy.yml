@@ -3,7 +3,7 @@ name: Deploy Dashboard to EC2
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
@@ -31,7 +31,7 @@ jobs:
             # Backend (Laravel) Deployment
             # -----------------------------
             cd ~/dashboard/backend || mkdir -p ~/dashboard/backend && cd ~/dashboard/backend
-            git pull origin main || git clone https://github.com/USERNAME/REPO_NAME.git .
+            git pull origin master || git clone https://github.com/USERNAME/REPO_NAME.git .
             composer install --no-dev --optimize-autoloader
             php artisan migrate --force
 
@@ -39,7 +39,7 @@ jobs:
             # Frontend (React TS + Tailwind) Deployment
             # -----------------------------
             cd ~/dashboard/frontend || mkdir -p ~/dashboard/frontend && cd ~/dashboard/frontend
-            git pull origin main || git clone https://github.com/USERNAME/REPO_NAME.git .
+            git pull origin master || git clone https://github.com/USERNAME/REPO_NAME.git .
             npm install
             npm run build
 
