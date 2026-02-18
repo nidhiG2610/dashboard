@@ -28,11 +28,33 @@ jobs:
           port: 22
           script: |
             echo "SSH connection successful!"
+
+            # -----------------------------
+            # Ensure project directories exist
+            # -----------------------------
+            mkdir -p ~/dashboard/backend
+            mkdir -p ~/dashboard/frontend
+
+
             # -----------------------------
             # Backend (Laravel) Deployment
             # -----------------------------
-            cd ~/dashboard/backend || mkdir -p ~/dashboard/backend && cd ~/dashboard/backend
-            git pull origin master || git clone https://github.com/nidhiG2610/dashboard.git .
+            if [ -d .git ]; then
+              echo "Backend repo exists, pulling latest changes..."
+              git pull origin main
+            else
+              echo "Cloning backend repo..."
+              git clone git@github.com:nidhiG2610/dashboard.git .
+            fi
+            
+            # Install Composer if not exists
+            if ! command -v composer &> /dev/null
+            then
+              echo "Installing Composer..."
+              curl -sS https://getcomposer.org/installer | php
+              sudo mv composer.phar /usr/local/bin/composer
+            fi
+
             composer install --no-dev --optimize-autoloader
             php artisan migrate --force
 
@@ -40,15 +62,34 @@ jobs:
             # Frontend (React TS + Tailwind) Deployment
             # -----------------------------
             cd ~/dashboard/frontend || mkdir -p ~/dashboard/frontend && cd ~/dashboard/frontend
-            git pull origin master || git clone https://github.com/nidhiG2610/dashboard.git .
-            npm install
-            npm run build
+            if [ -d .git ]; then
+              echo "Frontend repo exists, pulling latest changes..."
+              git pull origin main
+            else
+              echo "Cloning frontend repo..."
+              git clone git@github.com:nidhiG2610/dashboard.git .
+            fi
+            
+            # Install Node.js if not exists
+              if ! command -v node &> /dev/null
+              then
+                echo "Installing Node.js..."
+                curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+                sudo apt install -y nodejs
+              fi
 
-            # Copy frontend build to Laravel public folder
-            # Use 'build' if Create React App, 'dist' if Vite
-            cp -r build/* ~/dashboard/backend/public/
+              npm install
+              npm run build
 
-            # -----------------------------
-            # Restart Laravel worker
-            # -----------------------------
-            sudo systemctl restart laravel-worker.service
+              # No need to copy build files, Vite already outputs to backend/public/build
+              echo "Frontend build completed to backend/public/build"
+
+
+              # -----------------------------
+              # Restart Laravel worker - Setup not completed yet
+              # -----------------------------
+              # if systemctl list-units --full -all | grep -q "laravel-worker.service"; then
+              #  sudo systemctl restart laravel-worker.service
+              # else
+              #  echo "laravel-worker.service not found. Please create it on EC2."
+              # fi
