@@ -3,22 +3,18 @@ name: Deploy Dashboard to EC2
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # -----------------------------
       # Step 1: Checkout code
-      # -----------------------------
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # -----------------------------
       # Step 2: Deploy via SSH
-      # -----------------------------
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -27,27 +23,25 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
-            echo "SSH connection successful!"
-
-            # -----------------------------
-            # Ensure project directories exist
-            # -----------------------------
+            echo "=== Step 1: Ensure project directories ==="
             mkdir -p ~/dashboard/backend
             mkdir -p ~/dashboard/frontend
-
+            mkdir -p ~/dashboard/nginx
 
             # -----------------------------
-            # Backend (Laravel) Deployment
+            # Backend (Laravel)
             # -----------------------------
+            echo "=== Step 2: Backend deployment ==="
+            cd ~/dashboard/backend
             if [ -d .git ]; then
-              echo "Backend repo exists, pulling latest changes..."
+              echo "Backend repo exists, pulling latest..."
               git pull origin main
             else
               echo "Cloning backend repo..."
               git clone git@github.com:nidhiG2610/dashboard.git .
             fi
-            
-            # Install Composer if not exists
+
+            # Install Composer if missing
             if ! command -v composer &> /dev/null
             then
               echo "Installing Composer..."
@@ -59,37 +53,53 @@ jobs:
             php artisan migrate --force
 
             # -----------------------------
-            # Frontend (React TS + Tailwind) Deployment
+            # Frontend (React + Vite)
             # -----------------------------
-            cd ~/dashboard/frontend || mkdir -p ~/dashboard/frontend && cd ~/dashboard/frontend
+            echo "=== Step 3: Frontend deployment ==="
+            cd ~/dashboard/frontend
             if [ -d .git ]; then
-              echo "Frontend repo exists, pulling latest changes..."
+              echo "Frontend repo exists, pulling latest..."
               git pull origin main
             else
               echo "Cloning frontend repo..."
               git clone git@github.com:nidhiG2610/dashboard.git .
             fi
-            
-            # Install Node.js if not exists
-              if ! command -v node &> /dev/null
-              then
-                echo "Installing Node.js..."
-                curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-                sudo apt install -y nodejs
-              fi
 
-              npm install
-              npm run build
+            # Install Node.js if missing
+            if ! command -v node &> /dev/null
+            then
+              echo "Installing Node.js..."
+              curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+              sudo apt install -y nodejs
+            fi
 
-              # No need to copy build files, Vite already outputs to backend/public/build
-              echo "Frontend build completed to backend/public/build"
+            npm install
+            npm run build
+            echo "Frontend build complete (Vite outDir = backend/public/build)"
 
+            # -----------------------------
+            # Laravel worker service - Not supported yet
+            # -----------------------------
+            # echo "=== Step 4: Laravel worker ==="
+            # if systemctl list-units --full -all | grep -q "laravel-worker.service"; then
+            #   sudo systemctl restart laravel-worker.service
+            #   echo "Laravel worker restarted"
+            # else
+            #   echo "laravel-worker.service not found. Please create it manually on EC2."
+            # fi
 
-              # -----------------------------
-              # Restart Laravel worker - Setup not completed yet
-              # -----------------------------
-              # if systemctl list-units --full -all | grep -q "laravel-worker.service"; then
-              #  sudo systemctl restart laravel-worker.service
-              # else
-              #  echo "laravel-worker.service not found. Please create it on EC2."
-              # fi
+            # -----------------------------
+            # NGINX deployment
+            # -----------------------------
+            echo "=== Step 5: NGINX setup from dashboard/nginx ==="
+            NGINX_SOURCE=~/dashboard/nginx/dashboard.conf
+            NGINX_DEST=/etc/nginx/sites-available/dashboard
+
+            if [ -f "$NGINX_SOURCE" ]; then
+              sudo cp "$NGINX_SOURCE" "$NGINX_DEST"
+              sudo ln -sf "$NGINX_DEST" /etc/nginx/sites-enabled/dashboard
+              sudo nginx -t && sudo systemctl restart nginx
+              echo "NGINX deployed and restarted successfully"
+            else
+              echo "No NGINX config found in dashboard/nginx, skipping NGINX deployment."
+            fi
