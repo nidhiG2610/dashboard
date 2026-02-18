@@ -3,7 +3,7 @@ name: Deploy Dashboard to EC2
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
@@ -35,7 +35,7 @@ jobs:
             cd ~/dashboard/backend
             if [ -d .git ]; then
               echo "Backend repo exists, pulling latest..."
-              git pull origin main
+              git pull origin master
             else
               echo "Cloning backend repo..."
               git clone git@github.com:nidhiG2610/dashboard.git .
@@ -59,7 +59,7 @@ jobs:
             cd ~/dashboard/frontend
             if [ -d .git ]; then
               echo "Frontend repo exists, pulling latest..."
-              git pull origin main
+              git pull origin master
             else
               echo "Cloning frontend repo..."
               git clone git@github.com:nidhiG2610/dashboard.git .
