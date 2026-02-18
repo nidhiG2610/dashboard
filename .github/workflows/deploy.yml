@@ -27,6 +27,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
+            echo "SSH connection successful!"
             # -----------------------------
             # Backend (Laravel) Deployment
             # -----------------------------
