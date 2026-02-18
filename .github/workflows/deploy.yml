@@ -32,7 +32,7 @@ jobs:
             # Backend (Laravel)
             # -----------------------------
             echo "=== Step 2: Backend deployment ==="
-            cd ~/dashboard/backend
+            cd ~/dashboard
             if [ -d .git ]; then
               echo "Backend repo exists, pulling latest..."
               git pull origin master
@@ -55,15 +55,7 @@ jobs:
             # -----------------------------
             # Frontend (React + Vite)
             # -----------------------------
-            echo "=== Step 3: Frontend deployment ==="
-            cd ~/dashboard/frontend
-            if [ -d .git ]; then
-              echo "Frontend repo exists, pulling latest..."
-              git pull origin master
-            else
-              echo "Cloning frontend repo..."
-              git clone git@github.com:nidhiG2610/dashboard.git .
-            fi
+            echo "=== Step 3: Frontend deployment ==="            
 
             # Install Node.js if missing
             if ! command -v node &> /dev/null
