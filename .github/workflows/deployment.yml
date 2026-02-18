@@ -76,7 +76,6 @@ jobs:
 
             # Copy frontend build to Laravel public folder
             mkdir -p ~/dashboard/backend/public/build
-            cp -r dist/* ~/dashboard/backend/public/build/
             echo "Frontend build copied to Laravel public/build"
 
             # -----------------------------
