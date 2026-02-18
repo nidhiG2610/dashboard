@@ -25,3 +25,4 @@ dist-ssr
 claude-migration-plan
 CLAUDE.md
 /.ssh
+/nginx
