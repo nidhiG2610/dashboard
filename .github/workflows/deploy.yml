@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout code
+      # Step 1: Checkout repo for any local files needed
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Deploy via SSH
+      # Step 2: SSH deploy
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -23,23 +23,19 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
-            echo "=== Step 1: Ensure project directories ==="
-            mkdir -p ~/dashboard/backend
-            mkdir -p ~/dashboard/frontend
-            mkdir -p ~/dashboard/nginx
+            echo "=== Step 1: Remove old dashboard folder ==="
+            rm -rf ~/dashboard
+            mkdir -p ~/dashboard
+
+            echo "=== Step 2: Clone repository fresh ==="
+            cd ~/dashboard
+            git clone git@github.com:nidhiG2610/dashboard.git .
 
             # -----------------------------
             # Backend (Laravel)
             # -----------------------------
-            echo "=== Step 2: Backend deployment ==="
-            cd ~/dashboard
-            if [ -d .git ]; then
-              echo "Backend repo exists, pulling latest..."
-              git pull origin master
-            else
-              echo "Cloning backend repo..."
-              git clone git@github.com:nidhiG2610/dashboard.git .
-            fi
+            echo "=== Step 3: Backend deployment ==="
+            cd ~/dashboard/backend
 
             # Install Composer if missing
             if ! command -v composer &> /dev/null
@@ -55,7 +51,8 @@ jobs:
             # -----------------------------
             # Frontend (React + Vite)
             # -----------------------------
-            echo "=== Step 3: Frontend deployment ==="            
+            echo "=== Step 4: Frontend deployment ==="
+            cd ~/dashboard/frontend
 
             # Install Node.js if missing
             if ! command -v node &> /dev/null
@@ -70,20 +67,10 @@ jobs:
             echo "Frontend build complete (Vite outDir = backend/public/build)"
 
             # -----------------------------
-            # Laravel worker service - Not supported yet
-            # -----------------------------
-            # echo "=== Step 4: Laravel worker ==="
-            # if systemctl list-units --full -all | grep -q "laravel-worker.service"; then
-            #   sudo systemctl restart laravel-worker.service
-            #   echo "Laravel worker restarted"
-            # else
-            #   echo "laravel-worker.service not found. Please create it manually on EC2."
-            # fi
-
-            # -----------------------------
             # NGINX deployment
             # -----------------------------
-            echo "=== Step 5: NGINX setup from dashboard/nginx ==="
+            echo "=== Step 5: NGINX setup ==="
+            cd ~/dashboard/nginx
             NGINX_SOURCE=~/dashboard/nginx/dashboard.conf
             NGINX_DEST=/etc/nginx/sites-available/dashboard
 
