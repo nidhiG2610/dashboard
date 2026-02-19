@@ -14,7 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Deploy via SSH
+      # Step 2: Deploy backend & frontend
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -24,44 +24,58 @@ jobs:
           port: 22
           script: |
             set -e
-            echo "=== Step 1: Remove old dashboard folder and create fresh ==="
-
-            sudo rm -rf /var/www/dashboard
-            # rm -rf /var/www/dashboard/backend/public/build
-            sudo mkdir -p /var/www/dashboard
-            WEB_USER="www-data"
+            
+            # -----------------------------
+            # Variables
+            # -----------------------------
+            DEPLOY_DIR=/var/www/dashboard
+            BACKEND_DIR=$DEPLOY_DIR/backend
+            FRONTEND_DIR=$DEPLOY_DIR/frontend
             SSH_USER="ubuntu"
-            sudo chown -R $SSH_USER:$WEB_USER /var/www/dashboard
+            WEB_USER="www-data"
 
-            echo "=== Step 2: Clone repository via HTTPS using PAT ==="
-            cd /var/www/dashboard
-            git clone https://${{ secrets.GH_PAT }}@github.com/nidhiG2610/dashboard.git .
+            # -----------------------------
+            # Step 1: Ensure deployment directories exist
+            # -----------------------------
+            if [ ! -d "$DEPLOY_DIR" ]; then
+                echo "Directory $DEPLOY_DIR does not exist. Creating..."
+                sudo mkdir -p "$DEPLOY_DIR"
+                sudo chown -R $SSH_USER:$WEB_USER "$DEPLOY_DIR"
+            else
+                echo "Directory $DEPLOY_DIR already exists. Skipping creation."
+            fi
 
-            #---------------------
-            # Restore .env
-            #---------------------
-            echo "Restoring .env..."
-            cp /home/ubuntu/.env backend/.env
+            cd $DEPLOY_DIR
+
+            # -----------------------------
+            # Step 2: Git update
+            # -----------------------------
+            if [ -d ".git" ]; then
+                echo "Repo exists, pulling latest changes..."
+                git fetch --all
+                git reset --hard origin/master
+                echo "Existing repo, hence do not restoring env."
+            else
+                echo "Cloning repository for the first time..."
+                git clone https://${{ secrets.GH_PAT }}@github.com/nidhiG2610/dashboard.git .
+                echo "Restoring .env..."
+                cp /home/ubuntu/.env backend/.env
+            fi         
 
             # -----------------------------
             # Step 3: Install PHP & Extensions
             # -----------------------------
-            echo "=== Installing PHP and required extensions ==="
+            echo "Installing PHP extensions..."
             sudo apt update
-            sudo apt install -y php-sqlite3 php-pdo-sqlite php-cli php-mbstring php-xml php-curl
-                    
+            sudo apt install -y php-sqlite3 php-pdo-sqlite php-cli php-mbstring php-xml php-curl unzip
+               
             # -----------------------------
             # Step 4: Backend (Laravel)
             # -----------------------------
-            echo "=== Backend deployment ==="
-            cd /var/www/dashboard/backend
-            echo "=== in backend ==="
-
-            # Set ownership to SSH user BEFORE running Composer
-            sudo chown -R $SSH_USER:$WEB_USER /var/www/dashboard/backend
-            sudo chmod -R 775 /var/www/dashboard/backend
-            chmod 600 /var/www/dashboard/backend/.env
-            echo "=== Backend permissions set for installation ==="         
+            cd $BACKEND_DIR
+            sudo chown -R $SSH_USER:$WEB_USER $BACKEND_DIR
+            sudo chmod -R 775 $BACKEND_DIR
+            chmod 600 .env           
 
             # Install Composer if missing
             if ! command -v composer &> /dev/null; then
@@ -70,65 +84,45 @@ jobs:
                 sudo mv composer.phar /usr/local/bin/composer
             fi
             
-            echo "=== Installing Composer dependencies ==="
-            df -h
-            composer clear-cache
-            composer self-update
-
-            # Ensure unzip is installed for faster archive extraction
-            sudo apt install -y unzip
-
-            # Install with retry logic
+            echo "Installing Composer dependencies..."
             composer install --no-interaction --optimize-autoloader --prefer-dist || \
-              (echo "First attempt failed, retrying..." && composer install --no-interaction --optimize-autoloader --prefer-dist)
+              (echo "Retrying composer install..." && composer install --no-interaction --optimize-autoloader --prefer-dist)
 
             php artisan migrate --force
 
-            sudo chown -R www-data:www-data /var/www/dashboard/backend/storage
-            sudo chown -R www-data:www-data /var/www/dashboard/backend/bootstrap/cache
-            echo "=== in backend updating permisson step- 1 finished ==="
+            sudo chown -R www-data:www-data storage bootstrap/cache
+            sudo chmod -R 775 storage bootstrap/cache
+            
+            # -----------------------------
+            # Step 5: Install Node 20+ for frontend: React + Vite
+            # -----------------------------
+            echo "Installing Node.js and building frontend..."
+            sudo apt install -y nodejs npm
 
-            sudo chmod -R 775 /var/www/dashboard/backend/storage
-            sudo chmod -R 775 /var/www/dashboard/backend/bootstrap/cache
-            chmod 600 /var/www/dashboard/backend/.env
-            echo "=== in backend updating permisson step- 2 finished ==="          
-
-            # -----------------------------
-            # Step 5: Install Node 20+ for frontend
-            # -----------------------------
-            echo "=== Installing Node.js 20+ ==="
-            sudo apt install nodejs -y
-            node -v
-            npm -v
-
-            # -----------------------------
-            # Step 6: Frontend (React + Vite)
-            # -----------------------------
-            echo "=== Frontend deployment ==="
-            cd /var/www/dashboard
+            cd $DEPLOY_DIR
             npm install
             npm run build
 
-            # Copy frontend build to Laravel public folder
-            mkdir -p /var/www/dashboard/backend/public/build
+            # Ensure frontend build folder exists
+            FRONTEND_BUILD_DIR=$BACKEND_DIR/public/build
+            if [ ! -d "$FRONTEND_BUILD_DIR" ]; then
+                echo "Creating frontend build directory..."
+                mkdir -p "$FRONTEND_BUILD_DIR"
+            fi
             echo "Frontend build copied to Laravel public/build"
-
-            # -----------------------------
-            # Fix permissions - @dep
-            # -----------------------------
-            # echo "=== Step 6: Fix permissions ==="
-            # sudo chown -R www-data:www-data /var/www/dashboard/backend
-            # sudo find /var/www/dashboard/backend -type d -exec chmod 755 {} \;
-            # sudo find /var/www/dashboard/backend -type f -exec chmod 644 {} \;
-            # sudo chmod -R 775 /var/www/dashboard/backend/storage /var/www/dashboard/backend/bootstrap/cache
-
-
-            # -----------------------------
-            # Step 7: Nginx setup
-            # -----------------------------
-            echo "=== Nginx deployment ==="
-            cd /var/www/dashboard/nginx
-            NGINX_SOURCE=/var/www/dashboard/nginx/dashboard.conf
+      
+      # Step 3: Nginx deployment
+      - name: Deploy Nginx
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            set -e
+            DEPLOY_DIR=/var/www/dashboard
+            NGINX_SOURCE=$DEPLOY_DIR/nginx/dashboard.conf
             NGINX_DEST=/etc/nginx/sites-available/dashboard
 
             if [ -f "$NGINX_SOURCE" ]; then
@@ -137,5 +131,5 @@ jobs:
                 sudo nginx -t && sudo systemctl restart nginx
                 echo "NGINX deployed and restarted successfully"
             else
-                echo "No NGINX config found in dashboard/nginx, skipping NGINX deployment."
+                echo "No NGINX config found, skipping deployment."
             fi
