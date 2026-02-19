@@ -41,7 +41,7 @@ export default defineConfig((mode) => {
             },
         },
         build: {
-            // Ensure the build output actually goes to the backend folder
+            // Ensure the build output actually goes to the backend folder.
             outDir: 'backend/public/build',
             emptyOutDir: true,
             rollupOptions: {
