@@ -48,7 +48,8 @@ jobs:
             # -----------------------------
             echo "=== Installing PHP and required extensions ==="
             sudo apt update
-          
+            sudo apt install -y php-sqlite3 php-pdo-sqlite php-cli php-mbstring php-xml php-curl
+                    
             # -----------------------------
             # Step 4: Backend (Laravel)
             # -----------------------------
