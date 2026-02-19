@@ -68,9 +68,6 @@ jobs:
                 curl -sS https://getcomposer.org/installer | php
                 mv composer.phar /usr/local/bin/composer
             fi
-
-            echo "=== Clearing Composer cache ==="
-            composer clear-cache
             
             echo "=== Installing Composer dependencies ==="
             composer install --no-dev --optimize-autoloader --verbose
