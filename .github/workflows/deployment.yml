@@ -101,7 +101,7 @@ jobs:
             # Step 5: Install Node 20+ for frontend: React + Vite
             # -----------------------------
             echo "Installing Node.js and building frontend..."
-            sudo apt install -y nodejs npm
+            sudo apt install -y nodejs
 
             cd $DEPLOY_DIR
             npm install
