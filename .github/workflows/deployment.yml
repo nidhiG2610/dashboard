@@ -65,13 +65,6 @@ jobs:
             chmod 600 /var/www/dashboard/backend/.env
             echo "=== in backend updating permisson step- 2 finished ==="
 
-            # Install Composer if missing
-            if ! command -v composer &> /dev/null; then
-                echo "Installing Composer..."
-                curl -sS https://getcomposer.org/installer | php
-                mv composer.phar /usr/local/bin/composer
-            fi
-
             # Create Laravel directory structure
             sudo mkdir -p storage/framework/cache/data
             sudo mkdir -p storage/framework/sessions
@@ -79,6 +72,13 @@ jobs:
             sudo mkdir -p storage/logs
             sudo sudo chown -R www-data:www-data storage
             sudo chmod -R 775 storage
+
+            # Install Composer if missing
+            if ! command -v composer &> /dev/null; then
+                echo "Installing Composer..."
+                curl -sS https://getcomposer.org/installer | php
+                mv composer.phar /usr/local/bin/composer
+            fi
 
             composer install --no-dev --optimize-autoloader
             php artisan migrate --force
