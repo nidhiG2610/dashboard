@@ -24,12 +24,12 @@ jobs:
           port: 22
           script: |
             echo "=== Step 1: Remove old dashboard folder and create fresh ==="
-            rm -rf ~/dashboard
-            # rm -rf ~/dashboard/backend/public/build
-            mkdir -p ~/dashboard
+            rm -rf /home/ubuntu/dashboard
+            # rm -rf /home/ubuntu/dashboard/backend/public/build
+            mkdir -p /home/ubuntu/dashboard
 
             echo "=== Step 2: Clone repository via HTTPS using PAT ==="
-            cd ~/dashboard
+            cd /home/ubuntu/dashboard
             git clone https://${{ secrets.GH_PAT }}@github.com/nidhiG2610/dashboard.git .
             WEB_USER="www-data"
             SSH_USER="ubuntu"
@@ -53,16 +53,16 @@ jobs:
             # Step 4: Backend (Laravel)
             # -----------------------------
             echo "=== Backend deployment ==="
-            cd ~/dashboard/backend
+            cd /home/ubuntu/dashboard/backend
             echo "=== in backend ==="
 
             find . -type f -exec chmod 644 {} \;
             find . -type f -exec chmod 755 {} \;
             echo "=== in backend updating permisson step- 1 finished ==="
 
-            chmod -R 775 ~/dashboard/backend/storage
-            chmod -R 775 ~/dashboard/bootstrap/cache
-            chmod 600 ~/dashboard/backend/.env
+            chmod -R 775 /home/ubuntu/dashboard/backend/storage
+            chmod -R 775 /home/ubuntu/dashboard/bootstrap/cache
+            chmod 600 /home/ubuntu/dashboard/backend/.env
             echo "=== in backend updating permisson step- 2 finished ==="
 
             composer install --no-dev --optimize-autoloader
@@ -82,30 +82,30 @@ jobs:
             # Step 6: Frontend (React + Vite)
             # -----------------------------
             echo "=== Frontend deployment ==="
-            cd ~/dashboard/frontend
+            cd /home/ubuntu/dashboard/frontend
             npm install
             npm run build
 
             # Copy frontend build to Laravel public folder
-            mkdir -p ~/dashboard/backend/public/build
+            mkdir -p /home/ubuntu/dashboard/backend/public/build
             echo "Frontend build copied to Laravel public/build"
 
             # -----------------------------
             # Fix permissions - @dep
             # -----------------------------
             # echo "=== Step 6: Fix permissions ==="
-            # sudo chown -R www-data:www-data ~/dashboard/backend
-            # sudo find ~/dashboard/backend -type d -exec chmod 755 {} \;
-            # sudo find ~/dashboard/backend -type f -exec chmod 644 {} \;
-            # sudo chmod -R 775 ~/dashboard/backend/storage ~/dashboard/backend/bootstrap/cache
+            # sudo chown -R www-data:www-data /home/ubuntu/dashboard/backend
+            # sudo find /home/ubuntu/dashboard/backend -type d -exec chmod 755 {} \;
+            # sudo find /home/ubuntu/dashboard/backend -type f -exec chmod 644 {} \;
+            # sudo chmod -R 775 /home/ubuntu/dashboard/backend/storage /home/ubuntu/dashboard/backend/bootstrap/cache
 
 
             # -----------------------------
             # Step 7: Nginx setup
             # -----------------------------
             echo "=== Nginx deployment ==="
-            cd ~/dashboard/nginx
-            NGINX_SOURCE=~/dashboard/nginx/dashboard.conf
+            cd /home/ubuntu/dashboard/nginx
+            NGINX_SOURCE=/home/ubuntu/dashboard/nginx/dashboard.conf
             NGINX_DEST=/etc/nginx/sites-available/dashboard
 
             if [ -f "$NGINX_SOURCE" ]; then
