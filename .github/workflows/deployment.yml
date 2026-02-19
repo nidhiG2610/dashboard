@@ -56,22 +56,11 @@ jobs:
             cd /var/www/dashboard/backend
             echo "=== in backend ==="
 
-            sudo chown -R www-data:www-data /var/www/dashboard/backend/storage
-            sudo chown -R www-data:www-data /var/www/dashboard/backend/bootstrap/cache
-            echo "=== in backend updating permisson step- 1 finished ==="
-
-            sudo chmod -R 775 /var/www/dashboard/backend/storage
-            sudo chmod -R 775 /var/www/dashboard/backend/bootstrap/cache
+            # Set ownership to SSH user BEFORE running Composer
+            sudo chown -R $SSH_USER:$WEB_USER /var/www/dashboard/backend
+            sudo chmod -R 775 /var/www/dashboard/backend
             chmod 600 /var/www/dashboard/backend/.env
-            echo "=== in backend updating permisson step- 2 finished ==="
-
-            # Create Laravel directory structure
-            sudo mkdir -p storage/framework/cache/data
-            sudo mkdir -p storage/framework/sessions
-            sudo mkdir -p storage/framework/views
-            sudo mkdir -p storage/logs
-            sudo sudo chown -R www-data:www-data storage
-            sudo chmod -R 775 storage
+            echo "=== Backend permissions set for installation ==="         
 
             # Install Composer if missing
             if ! command -v composer &> /dev/null; then
@@ -82,6 +71,15 @@ jobs:
 
             composer install --no-dev --optimize-autoloader
             php artisan migrate --force
+
+            sudo chown -R www-data:www-data /var/www/dashboard/backend/storage
+            sudo chown -R www-data:www-data /var/www/dashboard/backend/bootstrap/cache
+            echo "=== in backend updating permisson step- 1 finished ==="
+
+            sudo chmod -R 775 /var/www/dashboard/backend/storage
+            sudo chmod -R 775 /var/www/dashboard/backend/bootstrap/cache
+            chmod 600 /var/www/dashboard/backend/.env
+            echo "=== in backend updating permisson step- 2 finished ==="          
 
             # -----------------------------
             # Step 5: Install Node 20+ for frontend
