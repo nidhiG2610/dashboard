@@ -10,15 +10,15 @@ export default defineConfig((mode) => {
         envDir: 'backend',
         server: {
             proxy: {
-                '/': {
-                    target: 'http://127.0.0.1:8000',
-                    APP_URL: env.APP_URL,
-                    changeOrigin: true,
-                },
+                // '/': {
+                //     target: 'http://127.0.0.1:8000',
+                //     APP_URL: env.APP_URL,
+                //     changeOrigin: true,
+                // },
                 // '/api': {
                 //     target: 'http://127.0.0.1:8000',
                 //     changeOrigin: true,
-                // },
+                // },  http://3.23.60.167/admin/login
                 '/api' : 'http://127.0.0.1:8000'
             },
             cors: true
@@ -41,7 +41,7 @@ export default defineConfig((mode) => {
             },
         },
         build: {
-            // Ensure the build output actually goes to the backend folder.
+            // Ensure the build output actually goes to the backend folder
             outDir: 'backend/public/build',
             emptyOutDir: true,
             rollupOptions: {
