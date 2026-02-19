@@ -144,7 +144,7 @@ class AuthController extends Controller
     public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
-        return redirect('/login');
+        return redirect(route('admin.login'));
     }
 
     public function showVerifyEmailPage(): InertiaResponse|RedirectResponse

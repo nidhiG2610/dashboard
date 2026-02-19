@@ -6,6 +6,7 @@ import SocialMedia from "../../components/SocialMedia";
 import Button from "../../components/Button";
 import { route } from "ziggy-js";
 import axios, { AxiosError, AxiosResponse } from "axios";
+import { router } from "@inertiajs/react";
 
 export default function SignIn() {
     const [form, setForm] = useState({
@@ -46,7 +47,7 @@ export default function SignIn() {
                 password: form.password,
             }).then((response: AxiosResponse) => {
                 if (response.data.success) {
-                    window.location.href = response.data.redirect;
+                    router.visit(response.data.redirect);
                 }
             }).catch((error: AxiosError) => {
                 // how to extract error messages from AxiosError
@@ -112,7 +113,7 @@ export default function SignIn() {
                             checked={isUserAgreedToBeRemembered}
                             type="sm"
                         />
-                        <a href={route('reset-password')} className="text-primary">Recover password</a>
+                        <a href={route('admin.reset-password')} className="text-primary">Recover password</a>
 
                     </div>
                     <div className='flex flex-row gap-4 mt-4'>
@@ -127,7 +128,7 @@ export default function SignIn() {
                         <Button
                             type="button"
                             variant="secondary"
-                            onClick={() => { window.location.href = route('signup'); }}
+                            onClick={() =>  router.visit(route('admin.signup'))}
                         >
                             Sign Up
                         </Button>

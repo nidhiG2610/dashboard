@@ -4,7 +4,7 @@ import Input from "../../components/Input";
 import RadioButton from "../../components/RadioButton";
 import SocialMedia from "../../components/SocialMedia";
 import Button from "../../components/Button";
-import { router } from "../../router";
+import { router } from '@inertiajs/react';
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { route } from "ziggy-js";
 
@@ -46,7 +46,7 @@ export default function SignUp() {
 
         setSubmitting(true);
 
-        const response = axios.post(route('register'), {
+        const response = axios.post(route('admin.register'), {
             first_name: form.first_name,
             last_name: form.last_name,
             email: form.email,
@@ -167,7 +167,7 @@ export default function SignUp() {
                     <Button
                         type="button"
                         variant="secondary"
-                        onClick={() => router.navigate("/signin")}
+                        onClick={() => router.visit(route('admin.login'))}
                     >
                         Sign In
                     </Button>

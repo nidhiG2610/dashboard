@@ -1,11 +1,9 @@
-import React, { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import Icon from "./Icon";
 import Dot from "./Dot";
 import { getFirstChar } from "../Helpers/utilities";
-import { router } from "../router";
 import { route } from "ziggy-js";
-import { Link, usePage } from "@inertiajs/react";
+import { Link, usePage, router } from "@inertiajs/react";
 import { PageProps } from "../interfaces/PageProps";
 
 interface SidebarProps {
@@ -37,10 +35,10 @@ const menuItems: menuItem[] = [
     { id: "help", label: "Help", icon: "help", href: route('help') },
 ];
 function Sidebar(
-    { 
-        items = menuItems, 
-        defaultOpen = true, 
-        onSelect = () => { } 
+    {
+        items = menuItems,
+        defaultOpen = true,
+        onSelect = () => { }
     }: SidebarProps) {
 
     const { user } = usePage<PageProps & Record<string, any>>().props;
@@ -49,7 +47,7 @@ function Sidebar(
         <aside className={twMerge("fixed h-screen overflow-hidden w-16 p-4 bg-white flex flex-col gap-4 justify-between")} aria-label="Sidebar navigation">
             <div>
                 <div className={twMerge("flex items-center justify-center")}>
-                    <h2 className="bg-primary rounded-full h-10 font-semibold p-4 flex items-center justify-center text-white cursor-pointer" onClick={() => router.navigate('/')}>
+                    <h2 className="bg-primary rounded-full h-10 font-semibold p-4 flex items-center justify-center text-white cursor-pointer" onClick={() => router.visit(route('dashboard'))}>
                         {getFirstChar(user.fullname)}
                     </h2>
                 </div>
@@ -57,17 +55,17 @@ function Sidebar(
                     <nav role="navigation" aria-label="Main">
                         <ul className={twMerge('list-none grid gap-4')} >
                             {
-                            menuItems.map((item) =>  {
-                                const isActive = String(item.href).endsWith(usePage().url);
-                                return (
-                                <li key={item.id} className={twMerge(`hover:bg-primary-light rounded p-2  ${isActive ? 'bg-primary-light rounded p-2' : ''}`)}>
-                                    {item.badgeColor && <Dot color={twMerge(item.badgeColor)} />}
-                                    <Link href={item.href} className="">
-                                        <Icon name={item.icon} size={8} withwrapper={false} />
-                                    </Link>
-                                </li>
-                            )
-                            })
+                                menuItems.map((item) => {
+                                    const isActive = String(item.href).endsWith(usePage().url);
+                                    return (
+                                        <li key={item.id} className={twMerge(`hover:bg-primary-light rounded p-2  ${isActive ? 'bg-primary-light rounded p-2' : ''}`)}>
+                                            {item.badgeColor && <Dot color={twMerge(item.badgeColor)} />}
+                                            <Link href={item.href} className="">
+                                                <Icon name={item.icon} size={8} withwrapper={false} />
+                                            </Link>
+                                        </li>
+                                    )
+                                })
                             }
                         </ul>
                     </nav>
@@ -78,7 +76,7 @@ function Sidebar(
                 <a href={route('logout')} className="flex items-center gap-2">
                     <span className="text-sm">Logout</span>
                 </a>
-                <a href={route('signup')} className="flex items-center gap-2">
+                <a href={route('admin.signup')} className="flex items-center gap-2">
                     {/* User image */}
                     <span className="text-sm">Profile</span>
                 </a>

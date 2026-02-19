@@ -2,8 +2,8 @@ import React from 'react';
 import AuthenticationLayout from '../../components/Layouts/AuthenticationLayout';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
-import { router } from '../../router';
 import { route } from 'ziggy-js';
+import { router } from '@inertiajs/react';
 
 const RegistrationCompleted = () => {
     const [form, setForm] = React.useState({
@@ -21,7 +21,7 @@ const RegistrationCompleted = () => {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        window.location.href = route('dashboard');
+       router.visit(route('dashboard'));
         // Handle form submission
     };
 

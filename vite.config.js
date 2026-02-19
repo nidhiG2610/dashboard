@@ -30,7 +30,7 @@ export default defineConfig((mode) => {
                 ],
                 publicDirectory: 'backend/public',
                 hotFile: 'backend/public/hot',
-                buildDirectory: 'build', // Optional: where it builds in backend/public
+                buildDirectory: 'build',
                 refresh: true,
             }),
             react()

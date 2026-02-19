@@ -16,19 +16,5 @@ import Files from "../pages/Files";
 import Help from "../pages/Help";
 
 export const router = createBrowserRouter([
-//   { path: "/login", element: <Login /> },
-  { path: "/", element: <Dashboard /> },
-  { path: "/signup", element: <SignUp /> },
-  { path: "/signin", element: <SignIn /> },
-  { path: "/reset-password", element: <ResetPassword /> },
-  { path: "/registration-completed", element: <RegistrationCompleted /> },
-  { path: "/details", element: <Details /> },
-  { path: "/dashboard", element: <Dashboard /> },
-  { path: "/business", element: <Business /> },
-  { path: "/notes", element: <Notes /> },
-  { path: "/tasks", element: <Tasks /> },
-  { path: "/calendar", element: <Calendar /> },
-  { path: "/messages", element: <Messages /> },
-  { path: "/files", element: <Files /> },
-  { path: "/help", element: <Help /> },
+
 ]);

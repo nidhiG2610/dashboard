@@ -1,4 +1,3 @@
-import React from "react";
 import AppLayout from "../components/Layouts/AppLayout";
 import Button from "../components/Button";
 

@@ -8,13 +8,13 @@ use App\Http\Controllers\Admin;
 use App\Http\Controllers\Setup\SetupController;
 
 Route::middleware(['web'])->group(function(){
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('admin.login');
 
     Route::prefix('admin')->group(function () {
-        Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-        Route::get('/signup', [AuthController::class, 'showRegistrationForm'])->name('signup');
-        Route::get('/reset-password', [AuthController::class, 'showResetPasswordForm'])->name('reset-password');
-        Route::post('/login', [AuthController::class, 'login'])->name('save-login');
-        Route::post('/signup', [AuthController::class, 'register'])->name('register');
+        Route::get('/signup', [AuthController::class, 'showRegistrationForm'])->name('admin.signup');
+        Route::get('/reset-password', [AuthController::class, 'showResetPasswordForm'])->name('admin.reset-password');
+        Route::post('/login', [AuthController::class, 'login'])->name('admin.save-login');
+        Route::post('/signup', [AuthController::class, 'register'])->name('admin.register');
     }); 
 
     Route::middleware(['auth' , 'role:admin'])->group(function(){ 
@@ -30,7 +30,7 @@ Route::middleware(['web'])->group(function(){
             Route::get('/details', [AuthController::class, 'showCompanyDetails'])->name('details');
             Route::post('/setup',[SetupController::class, 'runCommand'])->name('setup');
 
-            Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+            Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
             Route::get('/business', [Admin\BusinessController::class, 'index'])->name('business');
             Route::get('/tasks', [Admin\TasksController::class, 'index'])->name('tasks');
             Route::get('/notes', [Admin\NotesController::class, 'index'])->name('notes');
