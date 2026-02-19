@@ -68,7 +68,7 @@ jobs:
             echo "=== in backend updating permisson step- 1 finished ==="
 
             chmod -R 775 /home/ubuntu/dashboard/backend/storage
-            chmod -R 775 /home/ubuntu/dashboard/bootstrap/cache
+            chmod -R 775 /home/ubuntu/dashboard/backend/bootstrap/cache
             chmod 600 /home/ubuntu/dashboard/backend/.env
             echo "=== in backend updating permisson step- 2 finished ==="
 
