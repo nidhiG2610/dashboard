@@ -25,22 +25,22 @@ jobs:
           script: |
             echo "=== Step 1: Remove old dashboard folder and create fresh ==="
 
-            rm -rf /home/ubuntu/dashboard
-            # rm -rf /home/ubuntu/dashboard/backend/public/build
-            mkdir -p /home/ubuntu/dashboard
+            rm -rf /var/www/dashboard
+            # rm -rf /var/www/dashboard/backend/public/build
+            mkdir -p /var/www/dashboard
 
             echo "=== Step 2: Clone repository via HTTPS using PAT ==="
-            cd /home/ubuntu/dashboard
+            cd /var/www/dashboard
             git clone https://${{ secrets.GH_PAT }}@github.com/nidhiG2610/dashboard.git .
             WEB_USER="www-data"
             SSH_USER="ubuntu"
-            sudo chown -R $SSH_USER:$WEB_USER /home/ubuntu/dashboard
+            sudo chown -R $SSH_USER:$WEB_USER /var/www/dashboard
 
             #---------------------
             # Restore .env
             #---------------------
             echo "Restoring .env..."
-            cp /home/ubuntu/.env backend/.env
+            cp /var/www/.env backend/.env
 
             # -----------------------------
             # Step 3: Install PHP & Extensions
@@ -60,16 +60,16 @@ jobs:
             # Step 4: Backend (Laravel)
             # -----------------------------
             echo "=== Backend deployment ==="
-            cd /home/ubuntu/dashboard/backend
+            cd /var/www/dashboard/backend
             echo "=== in backend ==="
 
-            find . -type f -exec chmod 644 {} \;
-            find . -type f -exec chmod 755 {} \;
+            sudo chown -R www-data:www-data /var/www/dashboard/backend/storage
+            sudo chown -R www-data:www-data /var/www/dashboard/backend/bootstrap/cache
             echo "=== in backend updating permisson step- 1 finished ==="
 
-            chmod -R 775 /home/ubuntu/dashboard/backend/storage
-            chmod -R 775 /home/ubuntu/dashboard/backend/bootstrap/cache
-            chmod 600 /home/ubuntu/dashboard/backend/.env
+            sudo chmod -R 775 /var/www/dashboard/backend/storage
+            sudo chmod -R 775 /var/www/dashboard/backend/bootstrap/cache
+            chmod 600 /var/www/dashboard/backend/.env
             echo "=== in backend updating permisson step- 2 finished ==="
 
             composer install --no-dev --optimize-autoloader
@@ -89,30 +89,30 @@ jobs:
             # Step 6: Frontend (React + Vite)
             # -----------------------------
             echo "=== Frontend deployment ==="
-            cd /home/ubuntu/dashboard/frontend
+            cd /var/www/dashboard/frontend
             npm install
             npm run build
 
             # Copy frontend build to Laravel public folder
-            mkdir -p /home/ubuntu/dashboard/backend/public/build
+            mkdir -p /var/www/dashboard/backend/public/build
             echo "Frontend build copied to Laravel public/build"
 
             # -----------------------------
             # Fix permissions - @dep
             # -----------------------------
             # echo "=== Step 6: Fix permissions ==="
-            # sudo chown -R www-data:www-data /home/ubuntu/dashboard/backend
-            # sudo find /home/ubuntu/dashboard/backend -type d -exec chmod 755 {} \;
-            # sudo find /home/ubuntu/dashboard/backend -type f -exec chmod 644 {} \;
-            # sudo chmod -R 775 /home/ubuntu/dashboard/backend/storage /home/ubuntu/dashboard/backend/bootstrap/cache
+            # sudo chown -R www-data:www-data /var/www/dashboard/backend
+            # sudo find /var/www/dashboard/backend -type d -exec chmod 755 {} \;
+            # sudo find /var/www/dashboard/backend -type f -exec chmod 644 {} \;
+            # sudo chmod -R 775 /var/www/dashboard/backend/storage /var/www/dashboard/backend/bootstrap/cache
 
 
             # -----------------------------
             # Step 7: Nginx setup
             # -----------------------------
             echo "=== Nginx deployment ==="
-            cd /home/ubuntu/dashboard/nginx
-            NGINX_SOURCE=/home/ubuntu/dashboard/nginx/dashboard.conf
+            cd /var/www/dashboard/nginx
+            NGINX_SOURCE=/var/www/dashboard/nginx/dashboard.conf
             NGINX_DEST=/etc/nginx/sites-available/dashboard
 
             if [ -f "$NGINX_SOURCE" ]; then
