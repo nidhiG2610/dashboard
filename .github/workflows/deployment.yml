@@ -48,15 +48,7 @@ jobs:
             # -----------------------------
             echo "=== Installing PHP and required extensions ==="
             sudo apt update
-            sudo apt install -y php8.3-cli php8.3-fpm php8.3-curl php8.3-mbstring php8.3-xml php8.3-bcmath php8.3-mysql unzip curl git
-
-            # Install Composer if missing
-            if ! command -v composer &> /dev/null; then
-                echo "Installing Composer..."
-                curl -sS https://getcomposer.org/installer | php
-                mv composer.phar /usr/local/bin/composer
-            fi
-
+          
             # -----------------------------
             # Step 4: Backend (Laravel)
             # -----------------------------
@@ -72,6 +64,21 @@ jobs:
             sudo chmod -R 775 /var/www/dashboard/backend/bootstrap/cache
             chmod 600 /var/www/dashboard/backend/.env
             echo "=== in backend updating permisson step- 2 finished ==="
+
+            # Install Composer if missing
+            if ! command -v composer &> /dev/null; then
+                echo "Installing Composer..."
+                curl -sS https://getcomposer.org/installer | php
+                mv composer.phar /usr/local/bin/composer
+            fi
+
+            # Create Laravel directory structure
+            mkdir -p storage/framework/cache/data
+            mkdir -p storage/framework/sessions
+            mkdir -p storage/framework/views
+            mkdir -p storage/logs
+            sudo chown -R www-data:www-data storage
+            sudo chmod -R 775 storage
 
             composer install --no-dev --optimize-autoloader
             php artisan migrate --force
