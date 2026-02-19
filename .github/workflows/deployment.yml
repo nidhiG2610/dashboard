@@ -69,7 +69,11 @@ jobs:
                 mv composer.phar /usr/local/bin/composer
             fi
 
-            composer install --no-dev --optimize-autoloader
+            echo "=== Clearing Composer cache ==="
+            composer clear-cache
+            
+            echo "=== Installing Composer dependencies ==="
+            composer install --no-dev --optimize-autoloader --verbose
             php artisan migrate --force
 
             sudo chown -R www-data:www-data /var/www/dashboard/backend/storage
@@ -85,9 +89,7 @@ jobs:
             # Step 5: Install Node 20+ for frontend
             # -----------------------------
             echo "=== Installing Node.js 20+ ==="
-            sudo apt remove -y nodejs || true
-            curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-            sudo apt install -y nodejs
+            sudo apt install nodejs -y
             node -v
             npm -v
 
