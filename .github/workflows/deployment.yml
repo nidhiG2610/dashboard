@@ -70,7 +70,10 @@ jobs:
             fi
             
             echo "=== Installing Composer dependencies ==="
-            composer install --no-dev --optimize-autoloader --verbose
+            df -h
+            composer clear-cache
+            composer self-update
+            composer install --no-interaction --optimize-autoloader --verbose --no-suggest
             php artisan migrate --force
 
             sudo chown -R www-data:www-data /var/www/dashboard/backend/storage
