@@ -23,11 +23,13 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
+            set -e
             echo "=== Step 1: Remove old dashboard folder and create fresh ==="
 
-            rm -rf /var/www/dashboard
-            # rm -rf /var/www/dashboard/backend/public/build
-            mkdir -p /var/www/dashboard
+            sudo rm -rf /var/www/dashboard
+            # sudo rm -rf /var/www/dashboard/backend/public/build
+            sudo mkdir -p /var/www/dashboard
+            sudo chown ubuntu:ubuntu /var/www/dashboard
 
             echo "=== Step 2: Clone repository via HTTPS using PAT ==="
             cd /var/www/dashboard
@@ -89,7 +91,7 @@ jobs:
             # Step 6: Frontend (React + Vite)
             # -----------------------------
             echo "=== Frontend deployment ==="
-            cd /var/www/dashboard/frontend
+            cd /var/www/dashboard
             npm install
             npm run build
 
