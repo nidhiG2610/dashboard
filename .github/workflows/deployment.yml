@@ -25,12 +25,14 @@ jobs:
           script: |
             echo "=== Step 1: Remove old dashboard folder and create fresh ==="
             sudo rm -rf ~/dashboard
+            # rm -rf ~/dashboard/backend/public/build
             mkdir -p ~/dashboard
 
             echo "=== Step 2: Clone repository via HTTPS using PAT ==="
             cd ~/dashboard
             git clone https://${{ secrets.GH_PAT }}@github.com/nidhiG2610/dashboard.git .
-            sudo chown -R $USER:$USER .
+            WEB_USER="www-data"
+            SSH_USER="ubuntu"
 
             # -----------------------------
             # Step 3: Install PHP & Extensions
@@ -51,7 +53,15 @@ jobs:
             # -----------------------------
             echo "=== Backend deployment ==="
             cd ~/dashboard/backend
-            sudo chown -R $USER:$USER .
+            sudo chown -R $SSH_USER:$WEB_USER .
+            
+            sudo find . -type f -exec chmod 644 {} \;
+            sudo find . -type f -exec chmod 755 {} \;
+
+            sudo chmod -R 775 ~/dashboard/backend/storage
+            sudo chmod -R 775 ~/dashboard/bootstrap/cache
+            sudo chmod 600 ~/dashboard/backend/.env
+
             composer install --no-dev --optimize-autoloader
             php artisan migrate --force
 
