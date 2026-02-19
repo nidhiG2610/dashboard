@@ -33,6 +33,7 @@ jobs:
             git clone https://${{ secrets.GH_PAT }}@github.com/nidhiG2610/dashboard.git .
             WEB_USER="www-data"
             SSH_USER="ubuntu"
+            sudo chown -R $SSH_USER:$WEB_USER .
 
             # -----------------------------
             # Step 3: Install PHP & Extensions
@@ -53,14 +54,16 @@ jobs:
             # -----------------------------
             echo "=== Backend deployment ==="
             cd ~/dashboard/backend
-            sudo chown -R $SSH_USER:$WEB_USER .
-            
+            echo "=== in backend ==="
+
             sudo find . -type f -exec chmod 644 {} \;
             sudo find . -type f -exec chmod 755 {} \;
+            echo "=== in backend updating permisson step- 1 finished ==="
 
             sudo chmod -R 775 ~/dashboard/backend/storage
             sudo chmod -R 775 ~/dashboard/bootstrap/cache
             sudo chmod 600 ~/dashboard/backend/.env
+            echo "=== in backend updating permisson step- 2 finished ==="
 
             composer install --no-dev --optimize-autoloader
             php artisan migrate --force
@@ -80,7 +83,6 @@ jobs:
             # -----------------------------
             echo "=== Frontend deployment ==="
             cd ~/dashboard/frontend
-            sudo chown -R $USER:$USER .
             npm install
             npm run build
 
@@ -89,13 +91,13 @@ jobs:
             echo "Frontend build copied to Laravel public/build"
 
             # -----------------------------
-            # Fix permissions
+            # Fix permissions - @dep
             # -----------------------------
-            echo "=== Step 6: Fix permissions ==="
-            sudo chown -R www-data:www-data ~/dashboard/backend
-            sudo find ~/dashboard/backend -type d -exec chmod 755 {} \;
-            sudo find ~/dashboard/backend -type f -exec chmod 644 {} \;
-            sudo chmod -R 775 ~/dashboard/backend/storage ~/dashboard/backend/bootstrap/cache
+            # echo "=== Step 6: Fix permissions ==="
+            # sudo chown -R www-data:www-data ~/dashboard/backend
+            # sudo find ~/dashboard/backend -type d -exec chmod 755 {} \;
+            # sudo find ~/dashboard/backend -type f -exec chmod 644 {} \;
+            # sudo chmod -R 775 ~/dashboard/backend/storage ~/dashboard/backend/bootstrap/cache
 
 
             # -----------------------------
