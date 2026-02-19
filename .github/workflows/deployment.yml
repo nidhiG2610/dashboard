@@ -79,7 +79,7 @@ jobs:
             cd $BACKEND_DIR
             sudo chown -R $SSH_USER:$WEB_USER $BACKEND_DIR
             sudo chmod -R 775 $BACKEND_DIR
-            chmod 600 .env           
+            chmod 640 .env           
 
             # Install Composer if missing
             if ! command -v composer &> /dev/null; then
