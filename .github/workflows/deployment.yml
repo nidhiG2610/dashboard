@@ -73,11 +73,11 @@ jobs:
             fi
 
             # Create Laravel directory structure
-            mkdir -p storage/framework/cache/data
-            mkdir -p storage/framework/sessions
-            mkdir -p storage/framework/views
-            mkdir -p storage/logs
-            sudo chown -R www-data:www-data storage
+            sudo mkdir -p storage/framework/cache/data
+            sudo mkdir -p storage/framework/sessions
+            sudo mkdir -p storage/framework/views
+            sudo mkdir -p storage/logs
+            sudo sudo chown -R www-data:www-data storage
             sudo chmod -R 775 storage
 
             composer install --no-dev --optimize-autoloader
