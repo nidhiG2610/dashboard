@@ -38,6 +38,10 @@ jobs:
             # Step 1: Ensure deployment directories exist
             # -----------------------------
             if [ ! -d "$DEPLOY_DIR" ]; then
+                # Fix permissions before Git operations
+                sudo chown -R $SSH_USER:$WEB_USER $DEPLOY_DIR
+                sudo chmod -R u+w $DEPLOY_DIR
+                
                 echo "Directory $DEPLOY_DIR does not exist. Creating..."
                 sudo mkdir -p "$DEPLOY_DIR"
                 sudo chown -R $SSH_USER:$WEB_USER "$DEPLOY_DIR"
