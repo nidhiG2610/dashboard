@@ -10,11 +10,11 @@ export default defineConfig((mode) => {
         envDir: 'backend',
         server: {
             proxy: {
-                // '/': {
-                //     target: 'http://127.0.0.1:8000',
-                //     APP_URL: env.APP_URL,
-                //     changeOrigin: true,
-                // },
+                '/': {
+                    target: 'http://127.0.0.1:8000',
+                    APP_URL: env.APP_URL,
+                    changeOrigin: true,
+                },
                 // '/api': {
                 //     target: 'http://127.0.0.1:8000',
                 //     changeOrigin: true,
