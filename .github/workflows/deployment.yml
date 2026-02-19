@@ -38,16 +38,16 @@ jobs:
             # Step 1: Ensure deployment directories exist
             # -----------------------------
             if [ ! -d "$DEPLOY_DIR" ]; then
-                # Fix permissions before Git operations
-                sudo chown -R $SSH_USER:$WEB_USER $DEPLOY_DIR
-                sudo chmod -R u+w $DEPLOY_DIR
-                
                 echo "Directory $DEPLOY_DIR does not exist. Creating..."
                 sudo mkdir -p "$DEPLOY_DIR"
                 sudo chown -R $SSH_USER:$WEB_USER "$DEPLOY_DIR"
             else
                 echo "Directory $DEPLOY_DIR already exists. Skipping creation."
             fi
+
+            # Fix permissions before Git operations
+            sudo chown -R $SSH_USER:$WEB_USER $DEPLOY_DIR
+            sudo chmod -R u+w $DEPLOY_DIR
 
             cd $DEPLOY_DIR
 
@@ -64,7 +64,7 @@ jobs:
                 git clone https://${{ secrets.GH_PAT }}@github.com/nidhiG2610/dashboard.git .
                 echo "Restoring .env..."
                 cp /home/ubuntu/.env backend/.env
-            fi         
+            fi       
 
             # -----------------------------
             # Step 3: Install PHP & Extensions
