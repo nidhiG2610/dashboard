@@ -24,6 +24,7 @@ jobs:
           port: 22
           script: |
             echo "=== Step 1: Remove old dashboard folder and create fresh ==="
+
             rm -rf /home/ubuntu/dashboard
             # rm -rf /home/ubuntu/dashboard/backend/public/build
             mkdir -p /home/ubuntu/dashboard
@@ -33,7 +34,13 @@ jobs:
             git clone https://${{ secrets.GH_PAT }}@github.com/nidhiG2610/dashboard.git .
             WEB_USER="www-data"
             SSH_USER="ubuntu"
-            chown -R $SSH_USER:$WEB_USER .
+            sudo chown -R $SSH_USER:$WEB_USER /home/ubuntu/dashboard
+
+            #---------------------
+            # Restore .env
+            #---------------------
+            echo "Restoring .env..."
+            cp /home/ubuntu/.env backend/.env
 
             # -----------------------------
             # Step 3: Install PHP & Extensions
