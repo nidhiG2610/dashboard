@@ -31,7 +31,7 @@ jobs:
 
             echo "=== Step 2: Clone repository via HTTPS using PAT ==="
             cd /home/ubuntu/dashboard
-            git clone https://${{ secrets.GH_PAT }}@github.com/nidhiG2610/dashboard.git home/ubuntu/dashboard
+            git clone https://${{ secrets.GH_PAT }}@github.com/nidhiG2610/dashboard.git .
             WEB_USER="www-data"
             SSH_USER="ubuntu"
             sudo chown -R $SSH_USER:$WEB_USER /home/ubuntu/dashboard
