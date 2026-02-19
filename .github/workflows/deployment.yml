@@ -41,7 +41,7 @@ jobs:
             # Restore .env
             #---------------------
             echo "Restoring .env..."
-            cp /var/www/.env backend/.env
+            cp /home/ubuntu/.env backend/.env
 
             # -----------------------------
             # Step 3: Install PHP & Extensions
