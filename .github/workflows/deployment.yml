@@ -73,7 +73,14 @@ jobs:
             df -h
             composer clear-cache
             composer self-update
-            composer install --no-interaction --optimize-autoloader --verbose
+
+            # Ensure unzip is installed for faster archive extraction
+            sudo apt install -y unzip
+
+            # Install with retry logic
+            composer install --no-interaction --optimize-autoloader --prefer-dist || \
+              (echo "First attempt failed, retrying..." && composer install --no-interaction --optimize-autoloader --prefer-dist)
+
             php artisan migrate --force
 
             sudo chown -R www-data:www-data /var/www/dashboard/backend/storage
