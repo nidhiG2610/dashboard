@@ -42,7 +42,7 @@ export default function SignIn() {
 
         setSubmitting(true);      
 
-            axios.post(route('save-login'), {
+            axios.post(route('admin.save-login'), {
                 email: form.email,
                 password: form.password,
             }).then((response: AxiosResponse) => {
