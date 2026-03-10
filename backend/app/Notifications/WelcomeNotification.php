@@ -17,7 +17,7 @@ class WelcomeNotification extends Notification
                     ->subject('Welcome to Our App!')
                     ->greeting("Hello {$notifiable->first_name},")
                     ->line('Thanks for verifying your email!')
-                    ->action('Go to Dashboard', url('/dashboard'))
+                    ->action('Go to Dashboard', url('/'))
                     ->line('We are happy to have you!');
     }
 }

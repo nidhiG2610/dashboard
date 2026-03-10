@@ -10,17 +10,27 @@ class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
+    public static $seeders = [
+        // RoleSeeder::class,
+        // UserTableSeeder::class,
+        BrandSeeder::class,
+        WarehouseSeeder::class,
+        ProductTagSeeder::class,
+        ProductSeeder::class,
+        ProductVariantSeeder::class,
+        ProductImageSeeder::class,
+        InventorySeeder::class,
+        CartSeeder::class,
+        CartItemSeeder::class,
+    ];
+
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-        $this->call(RoleSeeder::class);
-        // User::factory(10)->create();
-
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        foreach (self::$seeders as $seeder) {
+            $this->call($seeder);
+        }
     }
 }

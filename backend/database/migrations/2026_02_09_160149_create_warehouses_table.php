@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name', 200)->notNullable();
             $table->string('code', 50)->unique()->notNullable();
             $table->string('address_line1', 255);
-            $table->string('address_line2', 255);
+            $table->string('address_line2', 255)->nullable();
             $table->string('city', 100);
             $table->string('state', 100);
             $table->string('postal_code', 20);

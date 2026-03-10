@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin;
 use App\Http\Controllers\Setup\SetupController;
 
 Route::middleware(['web'])->group(function(){
-    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('admin.login');
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 
     Route::prefix('admin')->group(function () {
         Route::get('/signup', [AuthController::class, 'showRegistrationForm'])->name('admin.signup');
@@ -29,6 +29,7 @@ Route::middleware(['web'])->group(function(){
         Route::middleware('verified')->group(function(){
             Route::get('/details', [AuthController::class, 'showCompanyDetails'])->name('details');
             Route::post('/setup',[SetupController::class, 'runCommand'])->name('setup');
+            Route::get('/setup/status', [SetupController::class, 'workerStatus'])->name('setup.status');
 
             Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
             Route::get('/business', [Admin\BusinessController::class, 'index'])->name('business');

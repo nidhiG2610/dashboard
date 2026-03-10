@@ -14,11 +14,17 @@ class CommandOutput implements ShouldBroadcast
 
     public string $output;
     public bool $finished;
+    public $current;
+    public $total;
+    // public string $input;
 
-    public function __construct(string $output, bool $finished = false)
+    public function __construct(string $output, int $current = 0, int $total = 0, bool $finished = false)
     {
         Log::info('CommandOutput event created');
+        // $this->input = $input;
         $this->output = $output;
+        $this->current = $current;
+        $this->total = $total;
         $this->finished = $finished;
     }
 

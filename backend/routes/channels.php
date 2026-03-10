@@ -9,4 +9,4 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 // @todo convert this to private channel.
 Broadcast::channel('command-output', function ($user) {
     return true;
-});
+}, ['guards' => ['web']], ['port' => 8000]);

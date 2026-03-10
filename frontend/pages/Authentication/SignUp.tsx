@@ -167,7 +167,7 @@ export default function SignUp() {
                     <Button
                         type="button"
                         variant="secondary"
-                        onClick={() => router.visit(route('admin.login'))}
+                        onClick={() => router.visit(route('login'))}
                     >
                         Sign In
                     </Button>

@@ -17,7 +17,7 @@ const Dashboard = () => {
                     <p className="text-3xl font-extrabold"> There is no data to display. </p>
                     <p className="text-3xl font-extrabold">Setup your business.</p>
                     <p className="text-xs text-gray-500">Get started by adding your first project.</p>
-                    <Button type="button" variant="primary" onClick={() => setShowTerminal(true)}>Setup</Button>
+                    <Button type="button" variant="primary" onClick={() => setShowTerminal(true)}>Start Setup</Button>
                 </div>
              }
             </div>

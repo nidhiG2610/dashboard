@@ -2,18 +2,10 @@
 
 namespace App\Http\Controllers\Setup;
 
-use App\Events\CommandOutput;
 use App\Http\Controllers\Controller;
 use App\Jobs\RunCommandJob;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
-use App\Models\User;
-use Exception;
-use Illuminate\Support\Facades\Broadcast;
 
 class SetupController extends Controller
 {
@@ -37,9 +29,21 @@ class SetupController extends Controller
      * POST /setup
      */
     public function runCommand(){
-        Log::info('Running setup command...');
+
         RunCommandJob::dispatch();
 
-    return response()->json(['message' => 'Command started']);
+        return response()->json(['message' => 'Command started']);
+    }
+
+    public function workerStatus()
+    {
+        // Check if queue worker is running
+        $output = shell_exec("ps aux | grep 'queue:work' | grep -v grep");
+
+        $running = !empty($output);
+
+        return response()->json([
+            'running' => $running
+        ]);    
     }
 }

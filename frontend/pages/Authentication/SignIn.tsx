@@ -20,17 +20,23 @@ export default function SignIn() {
         setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
         const validation = validate();
         setErrors(validation);
-
     }
 
     const validate = () => {
         const errors: { email?: string; password?: string } = {};
-        if (!form.email.trim()) errors.email = "Email is required";
-        else if (!/^\S+@\S+\.\S+$/.test(form.email)) errors.email = "Email is invalid";
-        if (!form.password) errors.password = "Password is required";
-        else if (form.password.length < 6)
+        if (!form.email.trim()) {
+            errors.email = "Email is required";
+        }
+        else if (!/^\S+@\S+\.\S+$/.test(form.email)) {
+            errors.email = "Email is invalid";
+        }
+
+        if (!form.password) {
+            errors.password = "Password is required";
+        }
+        else if (form.password.length < 6) {
             errors.password = "Password must be at least 6 characters";
-        console.log(errors);
+        }
         return errors;
     };
 
@@ -40,29 +46,25 @@ export default function SignIn() {
         setErrors(validation);
         if (Object.keys(validation).length) return;
 
-        setSubmitting(true);      
-
-            axios.post(route('admin.save-login'), {
+        setSubmitting(true);
+        try {
+            const response = await axios.post<{ success: boolean; redirect: string; errors?: Record<string, string> }>(route('admin.save-login'), {
                 email: form.email,
                 password: form.password,
-            }).then((response: AxiosResponse) => {
-                if (response.data.success) {
-                    router.visit(response.data.redirect);
-                }
-            }).catch((error: AxiosError) => {
-                // how to extract error messages from AxiosError
-                const responseData = (error.response?.data) as any;
-                if (responseData && responseData.errors) {
-                    setErrors(responseData.errors as Record<string, string>);
-            } else if (responseData && typeof responseData === "object") {
-                // some APIs return an object of errors directly
-                setErrors(responseData as Record<string, string>);
+            });
+
+            if (response.status === 200 && response.data.success) {
+                router.visit(response.data.redirect);
             } else {
-                setErrors({ submit: "Sign in failed" });
+                setErrors(response.data.errors as Record<string, string>);
             }
-        }).finally(() => {
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.data?.errors) {
+                setErrors(error.response.data.errors as Record<string, string>);
+            }
+        } finally {
             setSubmitting(false);
-        });
+        }
     };
 
     return (
@@ -128,7 +130,7 @@ export default function SignIn() {
                         <Button
                             type="button"
                             variant="secondary"
-                            onClick={() =>  router.visit(route('admin.signup'))}
+                            onClick={() => router.visit(route('admin.signup'))}
                         >
                             Sign Up
                         </Button>
