@@ -65,6 +65,14 @@ class RefreshData extends Command
             DB::table($table)->truncate();
         }
 
+        // clean users with role user
+        if (Schema::hasTable('users')) {
+            $this->line("Truncating users with role 'user'...");
+            DB::table('users')->where('role_id', '!=', 1)->delete();
+        } else {
+            $this->warn("Table users does not exist.");
+        }
+
         Schema::enableForeignKeyConstraints();
 
         $this->info("✅ Done! Seeded tables truncated successfully.");

@@ -71,7 +71,7 @@ jobs:
             # -----------------------------
             echo "Installing PHP extensions..."
             sudo apt update
-            sudo apt install -y php-sqlite3 php-pdo-sqlite php-cli php-mbstring php-xml php-curl unzip
+            sudo apt install -y php-cli php-mbstring php-xml php-curl php-pgsql unzip
                
             # -----------------------------
             # Step 4: Backend (Laravel)
