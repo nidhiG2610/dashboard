@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('reference_type', 50);
             $table->integer('reference_id');
             $table->text('notes')->nullable();
-            $table->foreignId('created_by')->constrained('users', 'user_id')->onDelete('cascade');
+            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
