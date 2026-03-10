@@ -92,7 +92,13 @@ jobs:
             composer install --no-interaction --optimize-autoloader --prefer-dist || \
               (echo "Retrying composer install..." && composer install --no-interaction --optimize-autoloader --prefer-dist)
 
-            php artisan migrate --force
+            echo "Starting Laravel migrations..."
+            if php artisan migrate --force; then
+              echo "Laravel migrations completed successfully."
+            else
+              echo "Laravel migrations failed."
+              exit 1
+            fi
 
             sudo chown -R www-data:www-data storage bootstrap/cache
             sudo chmod -R 775 storage bootstrap/cache
