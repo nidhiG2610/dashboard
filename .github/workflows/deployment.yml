@@ -14,6 +14,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Show runner public IP (for SG allowlist debugging)
+        run: |
+          echo "Runner public IP:"
+          curl -fsS https://api.ipify.org || true
+          echo
+
+      - name: Check SSH port reachability
+        shell: bash
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: |
+          set -euo pipefail
+          if [ -z "${EC2_HOST:-}" ]; then
+            echo "EC2_HOST secret is empty."
+            exit 1
+          fi
+          echo "Checking TCP connectivity to ${EC2_HOST}:22 ..."
+          timeout 10 bash -lc 'cat < /dev/null > /dev/tcp/${EC2_HOST}/22' && echo "Port 22 reachable."
+
       # Step 2: Deploy backend & frontend
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.7
@@ -22,6 +41,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
+          debug: true
           script: |
             set -e
             
@@ -124,6 +144,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
+          debug: true
           script: |
             set -e
             DEPLOY_DIR=/var/www/dashboard
