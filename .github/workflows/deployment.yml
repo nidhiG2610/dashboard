@@ -150,6 +150,16 @@ jobs:
               echo "Queue service file not found at $DEPLOY_DIR/deploy/laravel-queue.service; skipping systemd setup."
             fi
             php artisan queue:restart || true
+
+            # Install/refresh Reverb WebSocket service
+            if [ -f "$DEPLOY_DIR/deploy/laravel-reverb.service" ]; then
+              sudo cp "$DEPLOY_DIR/deploy/laravel-reverb.service" /etc/systemd/system/laravel-reverb.service
+              sudo systemctl daemon-reload
+              sudo systemctl enable --now laravel-reverb.service
+              sudo systemctl restart laravel-reverb.service
+            else
+              echo "Reverb service file not found at $DEPLOY_DIR/deploy/laravel-reverb.service; skipping systemd setup."
+            fi
             
             # -----------------------------
             # Step 5: Install Node 20+ for frontend: React + Vite

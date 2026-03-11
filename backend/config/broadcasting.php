@@ -16,7 +16,6 @@ return [
     */
 
     'default' => env('BROADCAST_CONNECTION', 'null'),
-    'default' => env('BROADCAST_DRIVER', 'null'),
 
     /*
     |--------------------------------------------------------------------------
